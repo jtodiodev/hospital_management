@@ -1,10 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Login.vue';
-import HomePage from '../components/HomePage.vue';
+import DashBoard from '../components/DashBoard.vue';
+import Doctors from '../components/Doctors.vue';
+import Appointments from '../components/Appointments.vue';
+import MedicalRecords from '../components/MedicalRecords.vue';
+import Patients from '../components/Patients.vue';
 
 const routes = [
   { path: '/', name: 'Login', component: Login },
-  { path: '/home', name: 'Home', component: HomePage, meta: { requiresAuth: true } },
+  { path: '/dashboard', name: 'Dashboard', component: DashBoard, meta: { requiresAuth: true } },
+  { path: '/doctors', name: 'Doctors', component: Doctors, meta: { requiresAuth: true } },
+  { path: '/appointments', name: 'Appointments', component: Appointments, meta: { requiresAuth: true } },
+  { path: '/medical-records', name: 'MedicalRecords', component: MedicalRecords, meta: { requiresAuth: true } },
+  { path: '/patients', name: 'Patients', component: Patients, meta: { requiresAuth: true } },
 ];
 
 const router = createRouter({
@@ -13,12 +21,12 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('authenticated'); // Replace with real authentication check
+  const isAuthenticated = localStorage.getItem('authenticated');
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'Login' });
   } else {
     next();
   }
-});
+}); 
 
 export default router;

@@ -16,19 +16,19 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Perform your authentication logic here
-        // For example, checking if the provided credentials match any user record
+        $user = User::where('email', $request->email)->first();
 
-        // For demonstration purposes, let's assume authentication is successful
-        // Replace this with your actual authentication logic
-        $authenticatedUser = User::where('email', $request->email)->first();
-
-        if ($authenticatedUser && Hash::check($request->password, $authenticatedUser->password)) {
-            // Authentication successful
-            return response()->json(['message' => 'Login successful'], 200);
+        if ($user && Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Login successful',
+                'user' => [
+                    'role' => $user->role,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ]
+            ], 200);
         }
 
-        // Authentication failed
         return response()->json(['message' => 'Invalid username or password'], 401);
     }
 

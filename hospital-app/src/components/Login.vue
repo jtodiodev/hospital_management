@@ -14,20 +14,8 @@
         </button>
       </div>
       <form v-if="isLogin" class="input-group-login" @submit.prevent="login">
-        <input
-          type="text"
-          class="input-field"
-          placeholder="Email address"
-          v-model="email"
-          required
-        />
-        <input
-          type="password"
-          class="input-field"
-          placeholder="Enter Password"
-          v-model="password"
-          required
-        />
+        <input type="text" class="input-field" placeholder="Email address" v-model="email" required />
+        <input type="password" class="input-field" placeholder="Enter Password" v-model="password" required />
         <div class="checkbox-wrapper">
           <input type="checkbox" class="check-box" v-model="rememberPassword" />
           <span>Remember Password</span>
@@ -41,34 +29,10 @@
           <option value="doctor">Doctor</option>
           <option value="patient">Patient</option>
         </select>
-        <input
-          type="text"
-          class="input-field"
-          placeholder="Full Name"
-          v-model="fullName"
-          required
-        />
-        <input
-          type="email"
-          class="input-field"
-          placeholder="Email address"
-          v-model="email"
-          required
-        />
-        <input
-          type="password"
-          class="input-field"
-          placeholder="Enter Password"
-          v-model="password"
-          required
-        />
-        <input
-          type="password"
-          class="input-field"
-          placeholder="Confirm Password"
-          v-model="confirmPassword"
-          required
-        />
+        <input type="text" class="input-field" placeholder="Full Name" v-model="fullName" required />
+        <input type="email" class="input-field" placeholder="Email address" v-model="email" required />
+        <input type="password" class="input-field" placeholder="Enter Password" v-model="password" required />
+        <input type="password" class="input-field" placeholder="Confirm Password" v-model="confirmPassword" required />
 
         <div class="checkbox-wrapper">
           <input type="checkbox" class="check-box" v-model="agreeTerms" />
@@ -105,12 +69,13 @@ export default {
     },
     async login() {
       try {
-        await axios.post("http://127.0.0.1:8000/api/login", {
+        const response = await axios.post("http://127.0.0.1:8000/api/login", {
           email: this.email,
           password: this.password,
         });
+        this.$store.dispatch('login', response.data.user);
         localStorage.setItem('authenticated', true);
-        this.$router.push({ name: 'Home' });
+        this.$router.push({ name: 'Dashboard' });
       } catch (error) {
         alert("Error logging in");
         console.error("Error logging in:", error);

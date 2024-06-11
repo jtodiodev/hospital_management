@@ -9,5 +9,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum',)-> get('/user', function (Request $request) {
-    return $request->user();
+    return response()->json([
+        'role' => $request->user()->role,
+        'name' => $request->user()->name,
+        'email' => $request->user()->email,
+    ]);
 });
