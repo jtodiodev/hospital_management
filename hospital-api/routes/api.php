@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoctorController;
-
+use App\Http\Controllers\AppointmentController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -19,5 +19,10 @@ Route::middleware('auth:sanctum',)-> get('/user', function (Request $request) {
 
 // Doctor routes using resourceful routing
 Route::resource('doctors', DoctorController::class)->except([
+    'create', 'edit'
+]);
+
+// Appointment routes using resourceful routing
+Route::resource('appointments', AppointmentController::class)->except([
     'create', 'edit'
 ]);

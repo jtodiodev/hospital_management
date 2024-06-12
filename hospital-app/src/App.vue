@@ -54,7 +54,6 @@
 </template>
 
 <script>
-
 export default {
   name: "App",
   data() {
@@ -268,19 +267,6 @@ nav ul li a:hover {
   z-index: 1;
   top: 60px;
   right: 20px;
-}
-
-.dropdown-content {
-  position: absolute;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  top: 60px;
-  right: 20px;
-  display: none;
-  background-color: #fff;
-  border-radius: 4px;
-  padding: 8px;
 }
 
 .dropdown-content a {
