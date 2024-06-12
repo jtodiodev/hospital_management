@@ -4,7 +4,7 @@ import DashBoard from '../components/DashBoard.vue';
 import Doctors from '../components/DoctorComponents/Doctors.vue';
 import Appointments from '../components/AppointmentComponents/Appointments.vue';
 import MedicalRecords from '../components/MedicalRecords.vue';
-import Patients from '../components/Patients.vue';
+import Patients from '../components/PatientsComponents/Patients.vue';
 
 const routes = [
   { path: '/', name: 'Login', component: Login },
