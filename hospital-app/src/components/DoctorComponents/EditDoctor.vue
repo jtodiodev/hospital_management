@@ -1,13 +1,21 @@
 <template>
   <div class="content">
     <label>Name: </label>
-    <input v-model="editedDoctor.name" type="text"><br><br>
+    <input v-model="editedDoctor.name" type="text">
+    <p v-if="errors.name" class="error-message">{{ errors.name }}</p><br><br>
+
     <label>Specialty: </label>
-    <input v-model="editedDoctor.specialty" type="text"><br><br>
-    <label>Email: </label>
-    <input v-model="editedDoctor.email" type="email"><br><br>
+    <input v-model="editedDoctor.specialty" type="text">
+    <p v-if="errors.specialty" class="error-message">{{ errors.specialty }}</p><br><br>
+
     <label>Contact Number: </label>
-    <input v-model="editedDoctor.contact_number" type="text"><br><br>
+    <input v-model="editedDoctor.contact_number" type="text">
+    <p v-if="errors.contact_number" class="error-message">{{ errors.contact_number }}</p><br><br>
+
+    <label>Email: </label>
+    <input v-model="editedDoctor.email" type="email">
+    <p v-if="errors.email" class="error-message">{{ errors.email }}</p><br><br>
+
     <div class="action-button">
       <button @click="updateDoctor" class="submit-button">Update</button>
       <button @click="cancelEdit" class="submit-button">Cancel</button>
@@ -25,17 +33,51 @@ export default {
   data() {
     return {
       editedDoctor: { ...this.doctor },
+      errors: {},
       errorMessage: '',
       successMessage: ''
     };
   },
   methods: {
+    validateFields() {
+      this.errors = {};
+      let valid = true;
+
+      if (!this.editedDoctor.name) {
+        this.errors.name = 'Name is required';
+        valid = false;
+      }
+      if (!this.editedDoctor.specialty) {
+        this.errors.specialty = 'Specialty is required';
+        valid = false;
+      }
+      if (!this.editedDoctor.email) {
+        this.errors.email = 'Email is required';
+        valid = false;
+      } else if (!/\S+@\S+\.\S+/.test(this.editedDoctor.email)) {
+        this.errors.email = 'Email must be in correct format';
+        valid = false;
+      }
+      if (!this.editedDoctor.contact_number) {
+        this.errors.contact_number = 'Contact Number is required';
+        valid = false;
+      } else if (!/^\d+$/.test(this.editedDoctor.contact_number)) {
+        this.errors.contact_number = 'Contact Number must be numeric';
+        valid = false;
+      }
+
+      return valid;
+    },
     async updateDoctor() {
+      if (!this.validateFields()) {
+        return;
+      }
+
       try {
         // Clear previous messages
         this.errorMessage = '';
         this.successMessage = '';
-        
+
         // Construct the correct URL
         const url = `http://127.0.0.1:8000/api/doctors/${this.editedDoctor.id}`;
 
@@ -55,7 +97,6 @@ export default {
           alert('Doctor updated successfully!');
           this.clearFields();
           location.reload();
-          
         } else {
           // Handle error if update fails
           const errorData = await response.json();
@@ -72,15 +113,14 @@ export default {
     },
     clearFields() {
       // Clear all input fields
-      this.doctor.name = '';
-      this.doctor.specialty = '';
-      this.doctor.email = '';
-      this.doctor.contact_number = '';
+      this.editedDoctor.name = '';
+      this.editedDoctor.specialty = '';
+      this.editedDoctor.email = '';
+      this.editedDoctor.contact_number = '';
     }
   }
 };
 </script>
-
 
 <style scoped>
 .content {

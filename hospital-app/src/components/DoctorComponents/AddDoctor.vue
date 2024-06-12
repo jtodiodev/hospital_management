@@ -2,13 +2,21 @@
   <div class="content">
     <form @submit.prevent="addDoctor" class="form">
       <label for="name">Name:</label>
-      <input type="text" id="name" v-model="doctor.name" class="input-field"><br><br>
+      <input type="text" id="name" v-model="doctor.name" class="input-field">
+      <p v-if="errors.name" class="error-message">{{ errors.name }}</p><br><br>
+
       <label for="specialty">Specialization:</label>
-      <input type="text" id="specialty" v-model="doctor.specialty" class="input-field"><br><br>
+      <input type="text" id="specialty" v-model="doctor.specialty" class="input-field">
+      <p v-if="errors.specialty" class="error-message">{{ errors.specialty }}</p><br><br>
+
       <label for="contact">Contact Number:</label>
-      <input type="text" id="contact_number" v-model="doctor.contact_number" class="input-field"><br><br>
+      <input type="text" id="contact_number" v-model="doctor.contact_number" class="input-field">
+      <p v-if="errors.contact_number" class="error-message">{{ errors.contact_number }}</p><br><br>
+
       <label for="email">Email:</label>
-      <input type="email" id="email" v-model="doctor.email" class="input-field"><br><br>
+      <input type="email" id="email" v-model="doctor.email" class="input-field">
+      <p v-if="errors.email" class="error-message">{{ errors.email }}</p><br><br>
+
       <input type="submit" value="Add Doctor" class="submit-button">
     </form>
   </div>
@@ -20,11 +28,45 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      doctor: { name: '', specialty: '', email: '', contact: '' }
+      doctor: { name: '', specialty: '', email: '', contact_number: '' },
+      errors: {}
     };
   },
   methods: {
+    validateFields() {
+      this.errors = {};
+      let valid = true;
+
+      if (!this.doctor.name) {
+        this.errors.name = 'Name is required';
+        valid = false;
+      }
+      if (!this.doctor.specialty) {
+        this.errors.specialty = 'Specialty is required';
+        valid = false;
+      }
+      if (!this.doctor.email) {
+        this.errors.email = 'Email is required';
+        valid = false;
+      } else if (!/\S+@\S+\.\S+/.test(this.doctor.email)) {
+        this.errors.email = 'Email must be in correct format';
+        valid = false;
+      }
+      if (!this.doctor.contact_number) {
+        this.errors.contact_number = 'Contact Number is required';
+        valid = false;
+      } else if (!/^\d+$/.test(this.doctor.contact_number)) {
+        this.errors.contact_number = 'Contact Number must be numeric';
+        valid = false;
+      }
+
+      return valid;
+    },
     addDoctor() {
+      if (!this.validateFields()) {
+        return;
+      }
+
       axios.post('http://127.0.0.1:8000/api/doctors', {
         name: this.doctor.name,
         specialty: this.doctor.specialty,
@@ -64,7 +106,6 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .content {
   margin-left: 240px;
@@ -97,5 +138,9 @@ form {
 
 .submit-button:hover {
   background-color: #45a049;
+}
+
+.error-message {
+  color: red;
 }
 </style>
