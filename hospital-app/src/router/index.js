@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Login.vue';
 import DashBoard from '../components/DashBoard.vue';
 import Doctors from '../components/DoctorComponents/Doctors.vue';
-import Appointments from '../components/Appointments.vue';
+import Appointments from '../components/AppointmentComponents/Appointments.vue';
 import MedicalRecords from '../components/MedicalRecords.vue';
 import Patients from '../components/Patients.vue';
 
@@ -17,7 +17,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
+  routes,
 });
 
 router.beforeEach((to, from, next) => {
@@ -27,6 +27,6 @@ router.beforeEach((to, from, next) => {
   } else {
     next();
   }
-}); 
+});
 
 export default router;
