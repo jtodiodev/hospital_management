@@ -17,7 +17,7 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Specialty</th>
+          <th>Specialization</th>
           <th>Email</th>
           <th>Contact Number</th>
           <th>Actions</th>
@@ -25,10 +25,10 @@
       </thead>
       <tbody>
         <tr v-for="doctor in doctors" :key="doctor.id">
-          <td>{{ doctor.name }}</td>
+          <td>Dr. {{ doctor.name }}</td>
           <td>{{ doctor.specialty }}</td>
           <td>{{ doctor.email }}</td>
-          <td>{{ doctor.contact }}</td>
+          <td>{{ doctor.contact_number }}</td>
           <td>
             <div class="action-button">
               <button @click="editDoctor(doctor)" class="btn btn-warning">Edit</button>
@@ -57,38 +57,58 @@ export default {
       editingDoctor: false
     };
   },
+  mounted() {
+    // Fetch the list of doctors from the backend API
+    this.fetchDoctors();
+  },
   methods: {
-    addDoctor(newDoctor) {
-      newDoctor.id = this.doctors.length + 1;
-      this.doctors.push(newDoctor);
-
-      alert("Doctor Added Successfully!");
+    async fetchDoctors() {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/doctors');
+        const data = await response.json();
+        // Update the doctors array with the fetched data
+        this.doctors = data;
+      } catch (error) {
+        console.error('Error fetching doctors:', error);
+        alert('Failed to fetch doctors. Please try again later.');
+      }
     },
     editDoctor(doctor) {
       this.currentDoctor = { ...doctor };
       this.editingDoctor = true;
     },
-    updateDoctor(updatedDoctor) {
-      const index = this.doctors.findIndex(d => d.id === updatedDoctor.id);
-      if (index !== -1) {
-        // Replace the doctor object at the specified index
-        this.doctors.splice(index, 1, updatedDoctor);
-
-        alert("Doctor Updated Successfully!");
-      }
-      this.cancelEdit();
-    },
-    deleteDoctor(doctor) {
+    async deleteDoctor(doctor) {
       const confirmDelete = confirm(`Are you sure you want to delete Dr. ${doctor.name}?`);
       if (confirmDelete) {
-        this.doctors = this.doctors.filter(d => d.id !== doctor.id);
+        try {
+          // Send a DELETE request to the server to remove the doctor
+          const response = await fetch(`http://127.0.0.1:8000/api/doctors/${doctor.id}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
 
-        alert("Doctor Removed Successfully!");
+          if (response.ok) {
+            // Update the local state to remove the deleted doctor
+            this.doctors = this.doctors.filter(d => d.id !== doctor.id);
+            alert("Doctor Removed Successfully!");
+          } else {
+            const errorData = await response.json();
+            alert(`Failed to delete doctor: ${errorData.message}`);
+          }
+        } catch (error) {
+          console.error('Error deleting doctor:', error);
+          alert('An error occurred while deleting the doctor.');
+        }
       }
     },
     cancelEdit() {
-      this.currentDoctor = { name: '', specialty: '', email: '', contact: '' };
+      this.currentDoctor = { name: '', specialty: '', email: '', contact_number: '' };
       this.editingDoctor = false;
+    },
+    resetForm() {
+      this.currentDoctor = { name: '', specialty: '', email: '', contact_number: '' };
     }
   }
 };

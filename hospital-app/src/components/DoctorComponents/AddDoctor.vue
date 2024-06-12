@@ -3,10 +3,10 @@
     <form @submit.prevent="addDoctor" class="form">
       <label for="name">Name:</label>
       <input type="text" id="name" v-model="doctor.name" class="input-field"><br><br>
-      <label for="specialty">Specialty:</label>
+      <label for="specialty">Specialization:</label>
       <input type="text" id="specialty" v-model="doctor.specialty" class="input-field"><br><br>
       <label for="contact">Contact Number:</label>
-      <input type="text" id="contact" v-model="doctor.contact" class="input-field"><br><br>
+      <input type="text" id="contact_number" v-model="doctor.contact_number" class="input-field"><br><br>
       <label for="email">Email:</label>
       <input type="email" id="email" v-model="doctor.email" class="input-field"><br><br>
       <input type="submit" value="Add Doctor" class="submit-button">
@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -23,12 +25,45 @@ export default {
   },
   methods: {
     addDoctor() {
-      this.$emit('add-doctor', { ...this.doctor });
-      this.doctor = { name: '', specialty: '', email: '', contact: '' }; // Reset form
+      axios.post('http://127.0.0.1:8000/api/doctors', {
+        name: this.doctor.name,
+        specialty: this.doctor.specialty,
+        contact_number: this.doctor.contact_number,
+        email: this.doctor.email
+      })
+        .then(response => {
+          // Handle success
+          console.log('Doctor added successfully:', response.data);
+          alert('Doctor added successfully');
+          this.clearFields();
+          location.reload();
+        })
+        .catch(error => {
+          // Handle error
+          if (error.response && error.response.data && error.response.data.errors) {
+            // Extract validation errors from the response
+            const errors = error.response.data.errors;
+            // Log or display the validation errors
+            console.error('Validation errors:', errors);
+            alert('Validation errors:\n' + JSON.stringify(errors));
+          } else {
+            // Handle other types of errors
+            console.error('Error adding doctor:', error.message);
+            alert('Error adding doctor');
+          }
+        });
+    },
+    clearFields() {
+      // Clear all input fields
+      this.doctor.name = '';
+      this.doctor.specialty = '';
+      this.doctor.email = '';
+      this.doctor.contact_number = '';
     }
   }
 };
 </script>
+
 
 <style scoped>
 .content {
