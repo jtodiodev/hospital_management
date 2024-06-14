@@ -14,12 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('doctors', function (Blueprint $table) {
-            $table->id();
+            $table->id('licensed_id'); 
             $table->string('name');
-            $table->string('specialty');
-            $table->string('contact_number');
-            $table->string('email')->unique();
+            $table->string('gender');
+            $table->integer('age');
+            $table->string('contactNo');
             $table->timestamps();
+        
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

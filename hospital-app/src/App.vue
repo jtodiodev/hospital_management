@@ -54,6 +54,7 @@
 </template>
 
 <script>
+
 export default {
   name: "App",
   data() {
@@ -117,6 +118,12 @@ export default {
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
   },
+  created() {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (userData) {
+      this.$store.dispatch('login', userData);
+    }
+  }
 };
 </script>
 
@@ -199,6 +206,7 @@ nav ul li a {
 
 .selected {
   color: #7ac29a;
+  cursor: default;
 }
 
 .selected:hover {
@@ -267,6 +275,19 @@ nav ul li a:hover {
   z-index: 1;
   top: 60px;
   right: 20px;
+}
+
+.dropdown-content {
+  position: absolute;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  top: 60px;
+  right: 20px;
+  display: none;
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 8px;
 }
 
 .dropdown-content a {

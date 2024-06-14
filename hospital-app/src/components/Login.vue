@@ -25,9 +25,9 @@
       <form v-else class="input-group-register" @submit.prevent="register">
         <select class="input-field form-select" v-model="role" required>
           <option value="" disabled selected>Select Role</option>
-          <option value="admin">Admin</option>
-          <option value="doctor">Doctor</option>
-          <option value="patient">Patient</option>
+          <option value="Admin">Admin</option>
+          <option value="Doctor">Doctor</option>
+          <option value="Patient">Patient</option>
         </select>
         <input type="text" class="input-field" placeholder="Full Name" v-model="fullName" required />
         <input type="email" class="input-field" placeholder="Email address" v-model="email" required />
@@ -73,7 +73,10 @@ export default {
           email: this.email,
           password: this.password,
         });
-        this.$store.dispatch('login', response.data.user);
+        const userData = response.data.user;
+        console.log(response.data.user.id)
+        localStorage.setItem('user', JSON.stringify(userData));
+        this.$store.dispatch('login', userData);
         localStorage.setItem('authenticated', true);
         this.$router.push({ name: 'Dashboard' });
       } catch (error) {

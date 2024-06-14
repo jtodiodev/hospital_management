@@ -9,14 +9,33 @@ class Doctor extends Model
 {
     use HasFactory;
 
-    // Define the table associated with the model
     protected $table = 'doctors';
 
-    // Define the fillable columns
+    protected $primaryKey = 'licensed_id';
+
     protected $fillable = [
         'name',
-        'specialty', // Add the specialty field
-        'contact_number',
-        'email',
+        'gender',
+        'age',
+        'contactNo',
     ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
+    protected static function boot()
+    {
+        parent::boot();
+    
+        static::creating(function ($doctor) {
+            $doctor->licensed_id = (string) rand(10000000, 99999999); 
+        });
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

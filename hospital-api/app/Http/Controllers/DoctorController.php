@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Doctor;
-use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\Response;
+use App\Models\User;
+
 
 class DoctorController extends Controller
 {
-    public function index()
+    public function findAll()
     {
         $doctors = Doctor::all();
         return response()->json($doctors);
@@ -17,41 +17,61 @@ class DoctorController extends Controller
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'specialty' => 'required|string|max:255',
-            'contact_number' => 'required|string|max:20',
-            'email' => 'required|email|unique:doctors,email',
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'name' => 'required',
+            'gender' => 'required',
+            'age' => 'required',
+            'contactNo' => 'required',
         ]);
-
-        $doctor = Doctor::create($validatedData);
-        return response()->json($doctor, Response::HTTP_CREATED);
+    
+        $user = User::find($request->input('user_id'));
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+    
+        $doctor = new Doctor($request->all());
+        $doctor->user_id = $user->id;
+        $doctor->save();
+    
+        return response()->json($doctor, 201);
     }
 
-    public function show($id)
+    public function findDoctor($id)
     {
-        $doctor = Doctor::findOrFail($id);
+        $doctor = Doctor::find($id);
+        if (!$doctor) {
+            return response()->json(['error' => 'Doctor not found'], 404);
+        }
         return response()->json($doctor);
     }
 
-    public function update(Request $request, $id)
+    public function edit(Request $request, $id)
     {
-        $doctor = Doctor::findOrFail($id);
-
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'specialty' => 'required|string|max:255',
-            'contact_number' => 'required|string|max:20',
-            'email' => ['required', 'email', Rule::unique('doctors')->ignore($doctor->id)],
+        $doctor = Doctor::find($id);
+        if (!$doctor) {
+            return response()->json(['error' => 'Doctor not found'], 404);
+        }
+    
+        $request->validate([
+            'name' => 'required|string',
+            'gender' => 'required|string',
+            'age' => 'required|integer',
+            'contactNo' => 'required|string',
         ]);
-
-        $doctor->update($validatedData);
-        return response()->json($doctor, Response::HTTP_OK);
+    
+        $doctor->update($request->all());
+        return response()->json($doctor);
     }
 
-    public function destroy($id)
+    public function delete($id)
     {
-        Doctor::destroy($id);
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        $doctor = Doctor::find($id);
+        if (!$doctor) {
+            return response()->json(['error' => 'Doctor not found'], 404);
+        }
+
+        $doctor->delete();
+        return response()->json(['message' => 'Doctor deleted successfully']);
     }
 }
